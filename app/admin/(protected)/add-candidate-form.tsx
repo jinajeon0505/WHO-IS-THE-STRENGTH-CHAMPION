@@ -1,28 +1,40 @@
 'use client'
 
 import { useState, useTransition } from 'react'
-import { compressImage } from '@/lib/compress-image'
+import { compressImage, MAX_UPLOAD_BYTES } from '@/lib/compress-image'
 import { addCandidate } from './actions'
 
 export function AddCandidateForm() {
   const [isPending, startTransition] = useTransition()
   const [compressing, setCompressing] = useState(false)
+  const [error, setError] = useState('')
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
+    setError('')
     const form = e.currentTarget
     const formData = new FormData(form)
     const file = formData.get('photo') as File | null
 
     if (file && file.size > 0) {
       setCompressing(true)
-      formData.set('photo', await compressImage(file))
+      const compressed = await compressImage(file)
       setCompressing(false)
+      if (compressed.size > MAX_UPLOAD_BYTES) {
+        setError('사진 파일이 너무 큽니다. 더 작은 사진으로 다시 시도해주세요.')
+        return
+      }
+      formData.set('photo', compressed)
     }
 
     startTransition(async () => {
-      await addCandidate(formData)
-      form.reset()
+      try {
+        const result = await addCandidate(formData)
+        if (result.error) { setError(result.error); return }
+        form.reset()
+      } catch {
+        setError('업로드 중 오류가 발생했습니다. 잠시 후 다시 시도해주세요.')
+      }
     })
   }
 
@@ -47,6 +59,7 @@ export function AddCandidateForm() {
         />
       </div>
       <input type="file" name="photo" accept="image/*" className="text-sm text-gray-600" />
+      {error && <p className="text-sm text-red-500 bg-red-50 rounded-lg px-3 py-2">{error}</p>}
       <button
         type="submit"
         disabled={isPending || compressing}

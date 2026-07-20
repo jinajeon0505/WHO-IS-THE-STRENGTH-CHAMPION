@@ -22,7 +22,7 @@ async function ensureBucket(supabase: ReturnType<typeof createAdminClient>) {
   }
 }
 
-export async function addCandidate(formData: FormData) {
+export async function addCandidate(formData: FormData): Promise<{ error?: string }> {
   await requireAdmin()
   const supabase = createAdminClient()
 
@@ -31,34 +31,39 @@ export async function addCandidate(formData: FormData) {
   const company = String(formData.get('company') || '').trim()
   const file = formData.get('photo') as File | null
 
-  if (!name) throw new Error('이름을 입력해주세요.')
+  if (!name) return { error: '이름을 입력해주세요.' }
 
-  let photoUrl: string | null = null
-  if (file && file.size > 0) {
-    await ensureBucket(supabase)
-    const path = `candidates/${Date.now()}-${file.name}`
-    const bytes = await file.arrayBuffer()
-    const { data, error } = await supabase.storage.from(BUCKET).upload(path, bytes, {
-      contentType: file.type || 'image/jpeg',
-      upsert: true,
+  try {
+    let photoUrl: string | null = null
+    if (file && file.size > 0) {
+      await ensureBucket(supabase)
+      const path = `candidates/${Date.now()}-${file.name}`
+      const bytes = await file.arrayBuffer()
+      const { data, error } = await supabase.storage.from(BUCKET).upload(path, bytes, {
+        contentType: file.type || 'image/jpeg',
+        upsert: true,
+      })
+      if (error) return { error: `사진 업로드 실패: ${error.message}` }
+      photoUrl = supabase.storage.from(BUCKET).getPublicUrl(data.path).data.publicUrl
+    }
+
+    const { count } = await supabase.from('candidates').select('*', { count: 'exact', head: true })
+
+    const { error: insertError } = await supabase.from('candidates').insert({
+      name,
+      title: title || null,
+      company: company || null,
+      photo_url: photoUrl,
+      display_order: count ?? 0,
+      is_active: true,
     })
-    if (error) throw new Error(`사진 업로드 실패: ${error.message}`)
-    photoUrl = supabase.storage.from(BUCKET).getPublicUrl(data.path).data.publicUrl
+    if (insertError) return { error: insertError.message }
+  } catch (e) {
+    return { error: e instanceof Error ? e.message : '알 수 없는 오류가 발생했습니다.' }
   }
 
-  const { count } = await supabase.from('candidates').select('*', { count: 'exact', head: true })
-
-  const { error: insertError } = await supabase.from('candidates').insert({
-    name,
-    title: title || null,
-    company: company || null,
-    photo_url: photoUrl,
-    display_order: count ?? 0,
-    is_active: true,
-  })
-  if (insertError) throw new Error(insertError.message)
-
   revalidatePath('/admin')
+  return {}
 }
 
 export async function updateCandidate(formData: FormData) {
@@ -74,25 +79,32 @@ export async function updateCandidate(formData: FormData) {
   revalidatePath('/admin')
 }
 
-export async function updateCandidatePhoto(formData: FormData) {
+export async function updateCandidatePhoto(formData: FormData): Promise<{ error?: string }> {
   await requireAdmin()
   const id = String(formData.get('id') || '')
   const file = formData.get('photo') as File | null
-  if (!id || !file || file.size === 0) return
+  if (!id || !file || file.size === 0) return { error: '사진 파일을 선택해주세요.' }
 
-  const supabase = createAdminClient()
-  await ensureBucket(supabase)
-  const path = `candidates/${Date.now()}-${file.name}`
-  const bytes = await file.arrayBuffer()
-  const { data, error } = await supabase.storage.from(BUCKET).upload(path, bytes, {
-    contentType: file.type || 'image/jpeg',
-    upsert: true,
-  })
-  if (error) throw new Error(`사진 업로드 실패: ${error.message}`)
-  const photoUrl = supabase.storage.from(BUCKET).getPublicUrl(data.path).data.publicUrl
+  try {
+    const supabase = createAdminClient()
+    await ensureBucket(supabase)
+    const path = `candidates/${Date.now()}-${file.name}`
+    const bytes = await file.arrayBuffer()
+    const { data, error } = await supabase.storage.from(BUCKET).upload(path, bytes, {
+      contentType: file.type || 'image/jpeg',
+      upsert: true,
+    })
+    if (error) return { error: `사진 업로드 실패: ${error.message}` }
+    const photoUrl = supabase.storage.from(BUCKET).getPublicUrl(data.path).data.publicUrl
 
-  await supabase.from('candidates').update({ photo_url: photoUrl }).eq('id', id)
+    const { error: updateError } = await supabase.from('candidates').update({ photo_url: photoUrl }).eq('id', id)
+    if (updateError) return { error: updateError.message }
+  } catch (e) {
+    return { error: e instanceof Error ? e.message : '알 수 없는 오류가 발생했습니다.' }
+  }
+
   revalidatePath('/admin')
+  return {}
 }
 
 export async function toggleActive(id: string, next: boolean) {

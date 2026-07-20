@@ -1,3 +1,5 @@
+export const MAX_UPLOAD_BYTES = 8 * 1024 * 1024
+
 export async function compressImage(file: File, maxDimension = 1000, quality = 0.8): Promise<File> {
   if (!file.type.startsWith('image/')) return file
 
