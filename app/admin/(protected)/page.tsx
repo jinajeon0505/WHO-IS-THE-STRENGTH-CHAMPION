@@ -1,6 +1,6 @@
 import { createAdminClient } from '@/lib/supabase-admin'
 import { Candidate } from '@/lib/supabase'
-import { addCandidate, updateCandidate, toggleActive, deleteCandidate, moveOrder } from './actions'
+import { addCandidate, updateCandidate, updateCandidatePhoto, toggleActive, deleteCandidate, moveOrder } from './actions'
 import { ConfirmDeleteForm } from './confirm-delete-form'
 
 export default async function AdminExecutiveVotePage() {
@@ -109,6 +109,17 @@ export default async function AdminExecutiveVotePage() {
                     className="border border-gray-300 rounded-lg px-2 py-1.5 text-sm flex-1 min-w-[100px]"
                   />
                   <button type="submit" className="text-xs text-blue-600 font-medium">저장</button>
+                </form>
+
+                <form action={updateCandidatePhoto} className="flex items-center gap-1.5 flex-shrink-0">
+                  <input type="hidden" name="id" value={c.id} />
+                  <input
+                    type="file"
+                    name="photo"
+                    accept="image/*"
+                    className="text-xs text-gray-500 w-24 file:mr-1 file:text-xs"
+                  />
+                  <button type="submit" className="text-xs text-blue-600 font-medium whitespace-nowrap">사진 변경</button>
                 </form>
 
                 <div className="flex items-center gap-2 flex-shrink-0">

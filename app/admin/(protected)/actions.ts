@@ -71,6 +71,27 @@ export async function updateCandidate(formData: FormData) {
   revalidatePath('/admin')
 }
 
+export async function updateCandidatePhoto(formData: FormData) {
+  await requireAdmin()
+  const id = String(formData.get('id') || '')
+  const file = formData.get('photo') as File | null
+  if (!id || !file || file.size === 0) return
+
+  const supabase = createAdminClient()
+  await ensureBucket(supabase)
+  const path = `candidates/${Date.now()}-${file.name}`
+  const bytes = await file.arrayBuffer()
+  const { data, error } = await supabase.storage.from(BUCKET).upload(path, bytes, {
+    contentType: file.type || 'image/jpeg',
+    upsert: true,
+  })
+  if (error) throw new Error(`사진 업로드 실패: ${error.message}`)
+  const photoUrl = supabase.storage.from(BUCKET).getPublicUrl(data.path).data.publicUrl
+
+  await supabase.from('candidates').update({ photo_url: photoUrl }).eq('id', id)
+  revalidatePath('/admin')
+}
+
 export async function toggleActive(id: string, next: boolean) {
   await requireAdmin()
   const supabase = createAdminClient()
