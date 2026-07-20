@@ -21,7 +21,15 @@ export default async function AdminExecutiveVotePage() {
 
   return (
     <div className="space-y-6">
-      <h1 className="text-xl font-bold text-gray-900">🏆 임원 근력왕을 찾아라</h1>
+      <div className="flex items-center justify-between">
+        <h1 className="text-xl font-bold text-gray-900">🏆 임원 근력왕을 찾아라</h1>
+        <a
+          href="/api/admin/export"
+          className="text-sm bg-white border border-gray-300 text-gray-700 hover:bg-gray-50 font-medium px-3 py-1.5 rounded-lg transition-colors"
+        >
+          ⬇ 통계·명단 다운로드
+        </a>
+      </div>
 
       {/* 투표 현황 */}
       <div className="bg-white rounded-xl border border-gray-200 p-5 space-y-4">
