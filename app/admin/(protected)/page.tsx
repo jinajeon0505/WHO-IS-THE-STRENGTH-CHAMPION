@@ -1,7 +1,9 @@
 import { createAdminClient } from '@/lib/supabase-admin'
 import { Candidate } from '@/lib/supabase'
-import { addCandidate, updateCandidate, updateCandidatePhoto, toggleActive, deleteCandidate, moveOrder } from './actions'
+import { updateCandidate, toggleActive, deleteCandidate, moveOrder } from './actions'
 import { ConfirmDeleteForm } from './confirm-delete-form'
+import { AddCandidateForm } from './add-candidate-form'
+import { PhotoUploadForm } from './photo-upload-form'
 
 export default async function AdminExecutiveVotePage() {
   const supabase = createAdminClient()
@@ -68,33 +70,7 @@ export default async function AdminExecutiveVotePage() {
       {/* 후보 등록 */}
       <div className="bg-white rounded-xl border border-gray-200 p-5 space-y-4">
         <h2 className="font-semibold text-gray-800">후보 등록</h2>
-        <form action={addCandidate} className="space-y-3">
-          <div className="flex gap-2">
-            <input
-              name="name"
-              placeholder="이름"
-              required
-              className="flex-1 border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
-            <input
-              name="title"
-              placeholder="직책 (선택)"
-              className="flex-1 border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
-            <input
-              name="company"
-              placeholder="소속 회사 (선택)"
-              className="flex-1 border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
-          </div>
-          <input type="file" name="photo" accept="image/*" className="text-sm text-gray-600" />
-          <button
-            type="submit"
-            className="bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium px-4 py-2 rounded-lg transition-colors"
-          >
-            후보 추가
-          </button>
-        </form>
+        <AddCandidateForm />
       </div>
 
       {/* 후보 목록 */}
@@ -135,16 +111,7 @@ export default async function AdminExecutiveVotePage() {
                   <button type="submit" className="text-xs text-blue-600 font-medium">저장</button>
                 </form>
 
-                <form action={updateCandidatePhoto} className="flex items-center gap-1.5 flex-shrink-0">
-                  <input type="hidden" name="id" value={c.id} />
-                  <input
-                    type="file"
-                    name="photo"
-                    accept="image/*"
-                    className="text-xs text-gray-500 w-24 file:mr-1 file:text-xs"
-                  />
-                  <button type="submit" className="text-xs text-blue-600 font-medium whitespace-nowrap">사진 변경</button>
-                </form>
+                <PhotoUploadForm id={c.id} />
 
                 <div className="flex items-center gap-2 flex-shrink-0">
                   <form action={moveOrder.bind(null, c.id, -1)}>
