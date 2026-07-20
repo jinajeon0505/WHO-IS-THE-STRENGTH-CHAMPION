@@ -137,9 +137,9 @@ export default function VotePage() {
                       <span className="text-lg">💪</span>
                     )}
                   </div>
-                  <p className="text-[10px] font-bold text-gray-900 truncate text-center">{c.name}</p>
-                  {c.title && <p className="text-[8px] text-gray-400 truncate text-center">{c.title}</p>}
-                  {c.company && <p className="text-[7px] text-gray-300 truncate text-center">{c.company}</p>}
+                  <p className="text-xs font-bold text-gray-900 truncate text-center">{c.name}</p>
+                  {c.title && <p className="text-[10px] text-gray-500 truncate text-center">{c.title}</p>}
+                  {c.company && <p className="text-[10px] text-gray-400 truncate text-center">{c.company}</p>}
                 </button>
               )
             })}
