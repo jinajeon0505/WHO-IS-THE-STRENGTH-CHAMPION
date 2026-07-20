@@ -22,6 +22,14 @@ async function ensureBucket(supabase: ReturnType<typeof createAdminClient>) {
   }
 }
 
+// Storage 키는 한글 등 비ASCII 문자가 섞인 파일명을 거부하므로 안전한 이름으로 치환
+function safeFileName(name: string): string {
+  const dot = name.lastIndexOf('.')
+  const ext = (dot >= 0 ? name.slice(dot) : '.jpg').toLowerCase().replace(/[^a-z0-9.]/g, '') || '.jpg'
+  const base = (dot >= 0 ? name.slice(0, dot) : name).replace(/[^a-zA-Z0-9-_]/g, '')
+  return `${base || 'photo'}${ext}`
+}
+
 export async function addCandidate(formData: FormData): Promise<{ error?: string }> {
   await requireAdmin()
   const supabase = createAdminClient()
@@ -37,7 +45,7 @@ export async function addCandidate(formData: FormData): Promise<{ error?: string
     let photoUrl: string | null = null
     if (file && file.size > 0) {
       await ensureBucket(supabase)
-      const path = `candidates/${Date.now()}-${file.name}`
+      const path = `candidates/${Date.now()}-${safeFileName(file.name)}`
       const bytes = await file.arrayBuffer()
       const { data, error } = await supabase.storage.from(BUCKET).upload(path, bytes, {
         contentType: file.type || 'image/jpeg',
@@ -88,7 +96,7 @@ export async function updateCandidatePhoto(formData: FormData): Promise<{ error?
   try {
     const supabase = createAdminClient()
     await ensureBucket(supabase)
-    const path = `candidates/${Date.now()}-${file.name}`
+    const path = `candidates/${Date.now()}-${safeFileName(file.name)}`
     const bytes = await file.arrayBuffer()
     const { data, error } = await supabase.storage.from(BUCKET).upload(path, bytes, {
       contentType: file.type || 'image/jpeg',
