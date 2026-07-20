@@ -112,7 +112,7 @@ export default function VotePage() {
             아직 등록된 후보가 없습니다. 곧 공개될 예정이에요!
           </div>
         ) : (
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-5 gap-1.5">
             {candidates.map(c => {
               const isSelected = selected === c.id
               const isMyVote = myVoteCandidateId === c.id
@@ -120,25 +120,25 @@ export default function VotePage() {
                 <button
                   key={c.id}
                   onClick={() => setSelected(c.id)}
-                  className={`relative bg-white rounded-2xl p-3 shadow-sm text-left transition-all border-2 ${
+                  className={`relative bg-white rounded-lg p-1 shadow-sm text-left transition-all border-2 ${
                     isSelected ? 'border-orange-500' : 'border-transparent'
                   }`}
                 >
                   {isMyVote && (
-                    <span className="absolute top-2 right-2 text-[10px] font-bold bg-orange-500 text-white px-1.5 py-0.5 rounded-full">
-                      내 투표
+                    <span className="absolute top-0.5 right-0.5 w-3.5 h-3.5 flex items-center justify-center text-[8px] font-bold bg-orange-500 text-white rounded-full leading-none">
+                      ✓
                     </span>
                   )}
-                  <div className="w-full aspect-square rounded-xl bg-gray-100 overflow-hidden mb-2 flex items-center justify-center">
+                  <div className="w-full aspect-square rounded-md bg-gray-100 overflow-hidden mb-1 flex items-center justify-center">
                     {c.photo_url ? (
                       // eslint-disable-next-line @next/next/no-img-element
                       <img src={c.photo_url} alt={c.name} className="w-full h-full object-cover" />
                     ) : (
-                      <span className="text-3xl">💪</span>
+                      <span className="text-lg">💪</span>
                     )}
                   </div>
-                  <p className="text-sm font-bold text-gray-900">{c.name}</p>
-                  {c.title && <p className="text-xs text-gray-400">{c.title}</p>}
+                  <p className="text-[10px] font-bold text-gray-900 truncate text-center">{c.name}</p>
+                  {c.title && <p className="text-[8px] text-gray-400 truncate text-center">{c.title}</p>}
                 </button>
               )
             })}
