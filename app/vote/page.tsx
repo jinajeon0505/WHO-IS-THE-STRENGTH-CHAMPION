@@ -139,6 +139,7 @@ export default function VotePage() {
                   </div>
                   <p className="text-[10px] font-bold text-gray-900 truncate text-center">{c.name}</p>
                   {c.title && <p className="text-[8px] text-gray-400 truncate text-center">{c.title}</p>}
+                  {c.company && <p className="text-[7px] text-gray-300 truncate text-center">{c.company}</p>}
                 </button>
               )
             })}

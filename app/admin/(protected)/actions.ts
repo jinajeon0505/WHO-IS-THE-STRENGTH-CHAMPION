@@ -28,6 +28,7 @@ export async function addCandidate(formData: FormData) {
 
   const name = String(formData.get('name') || '').trim()
   const title = String(formData.get('title') || '').trim()
+  const company = String(formData.get('company') || '').trim()
   const file = formData.get('photo') as File | null
 
   if (!name) throw new Error('이름을 입력해주세요.')
@@ -50,6 +51,7 @@ export async function addCandidate(formData: FormData) {
   const { error: insertError } = await supabase.from('candidates').insert({
     name,
     title: title || null,
+    company: company || null,
     photo_url: photoUrl,
     display_order: count ?? 0,
     is_active: true,
@@ -64,10 +66,11 @@ export async function updateCandidate(formData: FormData) {
   const id = String(formData.get('id') || '')
   const name = String(formData.get('name') || '').trim()
   const title = String(formData.get('title') || '').trim()
+  const company = String(formData.get('company') || '').trim()
   if (!id || !name) return
 
   const supabase = createAdminClient()
-  await supabase.from('candidates').update({ name, title: title || null }).eq('id', id)
+  await supabase.from('candidates').update({ name, title: title || null, company: company || null }).eq('id', id)
   revalidatePath('/admin')
 }
 

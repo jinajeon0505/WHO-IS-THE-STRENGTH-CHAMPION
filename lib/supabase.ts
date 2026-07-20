@@ -17,6 +17,7 @@ export type Candidate = {
   id: string
   name: string
   title: string | null
+  company: string | null
   photo_url: string | null
   display_order: number
   is_active: boolean

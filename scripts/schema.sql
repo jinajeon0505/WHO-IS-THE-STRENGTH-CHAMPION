@@ -14,6 +14,7 @@ create table if not exists candidates (
   id uuid primary key default gen_random_uuid(),
   name text not null,
   title text,                 -- 직책 (예: 대표이사, CFO)
+  company text,               -- 소속 회사 (예: 헥토파이낸셜)
   photo_url text,
   display_order int not null default 0,
   is_active boolean not null default true,

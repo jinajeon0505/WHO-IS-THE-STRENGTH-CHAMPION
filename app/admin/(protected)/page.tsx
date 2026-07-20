@@ -39,7 +39,12 @@ export default async function AdminExecutiveVotePage() {
               <li key={c.id}>
                 <div className="flex items-center justify-between text-sm mb-1">
                   <span className="font-medium text-gray-800">
-                    {isLeader ? '👑 ' : ''}{c.name} {c.title && <span className="text-gray-400 font-normal">({c.title})</span>}
+                    {isLeader ? '👑 ' : ''}{c.name}{' '}
+                    {(c.title || c.company) && (
+                      <span className="text-gray-400 font-normal">
+                        ({[c.title, c.company].filter(Boolean).join(' · ')})
+                      </span>
+                    )}
                   </span>
                   <span className="text-gray-500">{count}표 ({pct}%)</span>
                 </div>
@@ -66,6 +71,11 @@ export default async function AdminExecutiveVotePage() {
             <input
               name="title"
               placeholder="직책 (선택)"
+              className="flex-1 border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
+            <input
+              name="company"
+              placeholder="소속 회사 (선택)"
               className="flex-1 border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
           </div>
@@ -106,6 +116,12 @@ export default async function AdminExecutiveVotePage() {
                     name="title"
                     defaultValue={c.title || ''}
                     placeholder="직책"
+                    className="border border-gray-300 rounded-lg px-2 py-1.5 text-sm flex-1 min-w-[100px]"
+                  />
+                  <input
+                    name="company"
+                    defaultValue={c.company || ''}
+                    placeholder="소속 회사"
                     className="border border-gray-300 rounded-lg px-2 py-1.5 text-sm flex-1 min-w-[100px]"
                   />
                   <button type="submit" className="text-xs text-blue-600 font-medium">저장</button>
