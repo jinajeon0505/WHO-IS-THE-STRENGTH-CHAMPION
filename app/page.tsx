@@ -1,65 +1,94 @@
-import Image from "next/image";
+'use client'
 
-export default function Home() {
+import { useEffect, useState } from 'react'
+import { useRouter } from 'next/navigation'
+import { useAuth } from '@/lib/auth'
+
+function LoginForm() {
+  const [company, setCompany] = useState('')
+  const [department, setDepartment] = useState('')
+  const [name, setName] = useState('')
+  const [error, setError] = useState('')
+  const [loading, setLoading] = useState(false)
+  const { login } = useAuth()
+  const router = useRouter()
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
+    setLoading(true)
+    setError('')
+    const result = await login({ company, department, name })
+    setLoading(false)
+    if (result.error) { setError(result.error); return }
+    router.replace('/vote')
+  }
+
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
+    <form onSubmit={handleSubmit} className="bg-white rounded-2xl shadow-lg p-6 w-full space-y-3">
+      <div>
+        <label className="block text-sm font-medium text-gray-700 mb-1">회사</label>
+        <input
+          value={company}
+          onChange={e => setCompany(e.target.value)}
+          placeholder="예: 헥토"
+          className="w-full border border-gray-300 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-orange-500"
         />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
+      </div>
+      <div>
+        <label className="block text-sm font-medium text-gray-700 mb-1">부서</label>
+        <input
+          value={department}
+          onChange={e => setDepartment(e.target.value)}
+          placeholder="00팀 또는 00실"
+          className="w-full border border-gray-300 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-orange-500"
+        />
+      </div>
+      <div>
+        <label className="block text-sm font-medium text-gray-700 mb-1">이름</label>
+        <input
+          value={name}
+          onChange={e => setName(e.target.value)}
+          placeholder="이름을 입력하세요"
+          className="w-full border border-gray-300 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-orange-500"
+        />
+      </div>
+
+      {error && <p className="text-sm text-red-500 bg-red-50 rounded-lg px-3 py-2">{error}</p>}
+
+      <button
+        type="submit"
+        disabled={loading}
+        className="w-full bg-orange-500 hover:bg-orange-600 disabled:bg-orange-300 text-white font-semibold py-2.5 rounded-lg transition-colors"
+      >
+        {loading ? '확인 중...' : '투표하러 가기'}
+      </button>
+    </form>
+  )
+}
+
+export default function HomePage() {
+  const { voter, loading } = useAuth()
+  const router = useRouter()
+
+  useEffect(() => {
+    if (!loading && voter) router.replace('/vote')
+  }, [voter, loading, router])
+
+  return (
+    <div className="min-h-dvh w-full bg-gradient-to-br from-amber-400 to-orange-500 flex items-center justify-center px-4 py-10">
+      <div className="w-full max-w-sm space-y-6">
+        <div className="text-center text-white">
+          <p className="text-xs font-semibold tracking-wide mb-2">7월 특별 이벤트 · 신체나이 한 살 빼기 챌린지</p>
+          <div className="text-5xl mb-3">🏆</div>
+          <h1 className="text-2xl font-bold">임원 근력왕을 찾아라</h1>
+          <p className="text-sm text-white/90 mt-3 leading-relaxed">
+            임원들의 아웃바디 근력검사 결과,<br />
+            실제 나이 대비 근력나이가 가장<br />
+            어릴 것 같은 분에게 투표해주세요!
           </p>
         </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
-        </div>
-      </main>
+        <LoginForm />
+      </div>
     </div>
-  );
+  )
 }
