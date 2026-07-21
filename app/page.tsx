@@ -80,12 +80,12 @@ export default function HomePage() {
         <div className="text-center text-white">
           <p className="text-xs font-semibold tracking-wide mb-2">7월 특별 이벤트 · 신체나이 한 살 빼기 챌린지</p>
           <div className="text-5xl mb-3">🏆</div>
-          <h1 className="text-2xl font-bold">임원 근력왕을 찾아라</h1>
-          <p className="text-sm text-white/90 mt-3 leading-relaxed">
-            임원들의 아웃바디 근력검사 결과,<br />
-            실제 나이 대비 근력나이가 가장<br />
-            어릴 것 같은 분에게 투표해주세요!
-          </p>
+          <h1 className="text-2xl font-bold">임원 근력왕을 찾아라!</h1>
+          <div className="text-sm text-white/90 mt-3 leading-relaxed space-y-1">
+            <p>누가 헥토 최고의 임원 근력왕일까요?</p>
+            <p>실제 나이보다 근력나이가 가장 젊을 것 같은 임원 1명에게 투표해주세요!</p>
+            <p className="text-white/80 text-xs pt-1">근력왕을 맞추신 분들 중 추첨을 통해 20분께 소정의 상품을 드립니다~!</p>
+          </div>
         </div>
         <LoginForm />
       </div>

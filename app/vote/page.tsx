@@ -95,11 +95,12 @@ export default function VotePage() {
       <main className="max-w-lg mx-auto w-full px-4 py-6 space-y-4 pb-28">
         <div className="-mx-4 -mt-6 bg-gradient-to-br from-amber-400 to-orange-500 px-5 pt-6 pb-5">
           <p className="text-xs text-white/80 mb-1 font-medium">7월 특별 이벤트</p>
-          <h1 className="text-2xl font-bold text-white mb-2">🏆 임원 근력왕을 찾아라</h1>
-          <p className="text-sm text-white/90 leading-relaxed">
-            우리 회사 임원들의 아웃바디 근력검사 결과, 실제 나이 대비<br />
-            근력나이가 가장 어리게 나올 것 같은 분에게 투표해주세요!
-          </p>
+          <h1 className="text-2xl font-bold text-white mb-2">🏆 임원 근력왕을 찾아라!</h1>
+          <div className="text-sm text-white/90 leading-relaxed space-y-1">
+            <p>누가 헥토 최고의 임원 근력왕일까요?</p>
+            <p>실제 나이보다 근력나이가 가장 젊을 것 같은 임원 1명에게 투표해주세요!</p>
+            <p className="text-white/80 text-xs pt-1">근력왕을 맞추신 분들 중 추첨을 통해 20분께 소정의 상품을 드립니다~!</p>
+          </div>
         </div>
 
         <div className="bg-white rounded-2xl p-4 shadow-sm flex items-center justify-between">
