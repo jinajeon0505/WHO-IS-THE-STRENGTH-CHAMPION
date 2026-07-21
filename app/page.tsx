@@ -4,6 +4,18 @@ import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { useAuth } from '@/lib/auth'
 
+const COMPANIES = [
+  '헥토이노베이션',
+  '헥토파이낸셜',
+  '헥토헬스케어',
+  '헥토데이터',
+  '헥토미디어',
+  '헥토큐앤엠',
+  '헥토월렛원',
+  '헥토',
+  '드림베이',
+]
+
 function LoginForm() {
   const [company, setCompany] = useState('')
   const [department, setDepartment] = useState('')
@@ -27,12 +39,16 @@ function LoginForm() {
     <form onSubmit={handleSubmit} className="bg-white rounded-2xl shadow-lg p-6 w-full space-y-3">
       <div>
         <label className="block text-sm font-medium text-gray-700 mb-1">회사</label>
-        <input
+        <select
           value={company}
           onChange={e => setCompany(e.target.value)}
-          placeholder="예: 헥토"
-          className="w-full border border-gray-300 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-orange-500"
-        />
+          className="w-full border border-gray-300 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-orange-500 bg-white"
+        >
+          <option value="">회사를 선택하세요</option>
+          {COMPANIES.map(c => (
+            <option key={c} value={c}>{c}</option>
+          ))}
+        </select>
       </div>
       <div>
         <label className="block text-sm font-medium text-gray-700 mb-1">부서</label>
