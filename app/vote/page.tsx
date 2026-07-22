@@ -93,13 +93,13 @@ export default function VotePage() {
       </header>
 
       <main className="max-w-lg mx-auto w-full px-4 py-6 space-y-4 pb-28">
-        <div className="-mx-4 -mt-6 bg-gradient-to-br from-amber-400 to-orange-500 px-5 pt-6 pb-5">
-          <p className="text-xs text-white/80 mb-1 font-medium">7월 특별 이벤트</p>
-          <h1 className="text-2xl font-bold text-white mb-2">🏆 임원 근력왕을 찾아라!</h1>
-          <div className="text-sm text-white/90 leading-relaxed space-y-1">
+        <div className="-mx-4 -mt-6 bg-gradient-to-br from-orange-500 to-orange-700 px-5 pt-6 pb-5">
+          <p className="text-xs text-white mb-1 font-semibold [text-shadow:0_1px_2px_rgba(0,0,0,0.35)]">한 살 빼기 챌린지 · 7월 특별 이벤트</p>
+          <h1 className="text-2xl font-bold text-white mb-2 [text-shadow:0_1px_3px_rgba(0,0,0,0.35)]">🏆 임원 근력왕을 찾아라!</h1>
+          <div className="text-sm text-white leading-relaxed space-y-1 [text-shadow:0_1px_2px_rgba(0,0,0,0.3)]">
             <p>헥토 임원 중 최고의 근력왕은 누구일까요?</p>
             <p>실제 나이보다 근력나이가 가장 젊을 것 같은 한 분에게 투표해주세요!</p>
-            <p className="text-white/80 text-xs pt-1">근력왕을 맞추신 분들 중 추첨을 통해 20분께 소정의 상품을 드립니다~!</p>
+            <p className="text-white text-xs pt-1">근력왕을 맞추신 분들 중 추첨을 통해 20분께 소정의 상품을 드립니다~!</p>
           </div>
         </div>
 

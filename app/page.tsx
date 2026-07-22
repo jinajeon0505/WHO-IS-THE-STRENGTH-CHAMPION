@@ -91,16 +91,16 @@ export default function HomePage() {
   }, [voter, loading, router])
 
   return (
-    <div className="min-h-dvh w-full bg-gradient-to-br from-amber-400 to-orange-500 flex items-center justify-center px-4 py-10">
+    <div className="min-h-dvh w-full bg-gradient-to-br from-orange-500 to-orange-700 flex items-center justify-center px-4 py-10">
       <div className="w-full max-w-sm space-y-6">
-        <div className="text-center text-white">
-          <p className="text-xs font-semibold tracking-wide mb-2">7월 특별 이벤트 · 신체나이 한 살 빼기 챌린지</p>
+        <div className="text-center text-white [text-shadow:0_1px_2px_rgba(0,0,0,0.35)]">
+          <p className="text-xs font-semibold tracking-wide mb-2">한 살 빼기 챌린지 · 7월 특별 이벤트</p>
           <div className="text-5xl mb-3">🏆</div>
           <h1 className="text-2xl font-bold">임원 근력왕을 찾아라!</h1>
-          <div className="text-sm text-white/90 mt-3 leading-relaxed space-y-1">
+          <div className="text-sm mt-3 leading-relaxed space-y-1">
             <p>헥토 임원 중 최고의 근력왕은 누구일까요?</p>
             <p>실제 나이보다 근력나이가 가장 젊을 것 같은 한 분에게 투표해주세요!</p>
-            <p className="text-white/80 text-xs pt-1">근력왕을 맞추신 분들 중 추첨을 통해 20분께 소정의 상품을 드립니다~!</p>
+            <p className="text-xs pt-1">근력왕을 맞추신 분들 중 추첨을 통해 20분께 소정의 상품을 드립니다~!</p>
           </div>
         </div>
         <LoginForm />
