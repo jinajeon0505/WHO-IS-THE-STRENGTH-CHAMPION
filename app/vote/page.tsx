@@ -5,6 +5,9 @@ import { useRouter } from 'next/navigation'
 import { useAuth } from '@/lib/auth'
 import { supabase, Candidate } from '@/lib/supabase'
 
+// 실제 근력나이 측정 결과가 나올 때마다 이 값만 갱신해서 배포하면 됩니다.
+const BEST_RECORD_TEXT = '-26세'
+
 export default function VotePage() {
   const { voter, loading: authLoading, logout } = useAuth()
   const router = useRouter()
@@ -12,21 +15,18 @@ export default function VotePage() {
   const [candidates, setCandidates] = useState<Candidate[]>([])
   const [myVoteCandidateId, setMyVoteCandidateId] = useState<string | null>(null)
   const [selected, setSelected] = useState<string | null>(null)
-  const [participantCount, setParticipantCount] = useState(0)
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
   const [message, setMessage] = useState('')
 
   const fetchAll = async (voterId: string) => {
-    const [candidatesRes, myVoteRes, countRes] = await Promise.all([
+    const [candidatesRes, myVoteRes] = await Promise.all([
       supabase.from('candidates').select('*').eq('is_active', true).order('display_order'),
       supabase.from('votes').select('candidate_id').eq('voter_id', voterId).maybeSingle(),
-      supabase.from('votes').select('*', { count: 'exact', head: true }),
     ])
     setCandidates(candidatesRes.data || [])
     setMyVoteCandidateId(myVoteRes.data?.candidate_id ?? null)
     setSelected(myVoteRes.data?.candidate_id ?? null)
-    setParticipantCount(countRes.count ?? 0)
     setLoading(false)
   }
 
@@ -35,15 +35,6 @@ export default function VotePage() {
     if (!voter) { router.replace('/'); return }
     // eslint-disable-next-line react-hooks/set-state-in-effect -- initial data load, no external subscription to move this into
     fetchAll(voter.id)
-
-    const channel = supabase
-      .channel('votes_count')
-      .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'votes' }, () => {
-        setParticipantCount(c => c + 1)
-      })
-      .subscribe()
-
-    return () => { supabase.removeChannel(channel) }
   }, [voter, authLoading, router])
 
   const submitVote = async () => {
@@ -104,8 +95,8 @@ export default function VotePage() {
         </div>
 
         <div className="bg-white rounded-2xl p-4 shadow-sm flex items-center justify-between">
-          <span className="text-sm font-semibold text-gray-900">👥 현재 참여 인원</span>
-          <span className="text-lg font-bold text-orange-500">{participantCount}명</span>
+          <span className="text-sm font-semibold text-gray-900">🔥 현재까지 최고 기록</span>
+          <span className="text-lg font-bold text-orange-500">{BEST_RECORD_TEXT}</span>
         </div>
 
         {candidates.length === 0 ? (
