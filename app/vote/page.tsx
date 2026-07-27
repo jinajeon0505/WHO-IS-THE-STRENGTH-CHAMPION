@@ -6,7 +6,11 @@ import { useAuth } from '@/lib/auth'
 import { supabase, Candidate } from '@/lib/supabase'
 
 // 실제 근력나이 측정 결과가 나올 때마다 이 값만 갱신해서 배포하면 됩니다.
-const BEST_RECORD_TEXT = '-26세'
+const BEST_RECORDS = [
+  { medal: '🥇', label: '1위', text: '-26세' },
+  { medal: '🥈', label: '2위', text: '-22세' },
+  { medal: '🥉', label: '3위', text: '-21세' },
+]
 
 export default function VotePage() {
   const { voter, loading: authLoading, logout } = useAuth()
@@ -94,9 +98,16 @@ export default function VotePage() {
           </div>
         </div>
 
-        <div className="bg-white rounded-2xl p-4 shadow-sm flex items-center justify-between">
-          <span className="text-sm font-semibold text-gray-900">🔥 현재까지 최고 기록</span>
-          <span className="text-lg font-bold text-orange-500">{BEST_RECORD_TEXT}</span>
+        <div className="bg-white rounded-2xl p-4 shadow-sm">
+          <p className="text-sm font-semibold text-gray-900 mb-3">🔥 현재까지 최고 기록</p>
+          <div className="space-y-2">
+            {BEST_RECORDS.map(r => (
+              <div key={r.label} className="flex items-center justify-between">
+                <span className="text-sm text-gray-600">{r.medal} {r.label}</span>
+                <span className="text-base font-bold text-orange-500">{r.text}</span>
+              </div>
+            ))}
+          </div>
         </div>
 
         {candidates.length === 0 ? (
