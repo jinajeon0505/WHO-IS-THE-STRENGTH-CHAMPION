@@ -1,7 +1,7 @@
 'use client'
 
 import { createContext, useContext, useEffect, useState } from 'react'
-import { supabase, Voter } from './supabase'
+import { Voter } from './supabase'
 
 type LoginParams = { company: string; department: string; name: string }
 
@@ -40,30 +40,21 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const n = name.trim()
     if (!c || !d || !n) return { error: '회사, 부서, 이름을 모두 입력해주세요.' }
 
-    const { data: existing } = await supabase
-      .from('voters')
-      .select('*')
-      .eq('company', c)
-      .eq('department', d)
-      .eq('name', n)
-      .maybeSingle()
-
-    if (existing) {
-      setVoter(existing)
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(existing))
-      return { error: null }
+    let data: { voter?: Voter; error?: string }
+    try {
+      const res = await fetch('/api/voter/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ company: c, department: d, name: n }),
+      })
+      data = await res.json()
+      if (!res.ok || !data.voter) return { error: data.error || '로그인에 실패했습니다.' }
+    } catch {
+      return { error: '로그인 중 오류가 발생했습니다. 다시 시도해주세요.' }
     }
 
-    const { data: created, error } = await supabase
-      .from('voters')
-      .insert({ company: c, department: d, name: n })
-      .select('*')
-      .single()
-
-    if (error || !created) return { error: '등록에 실패했습니다. 다시 시도해주세요.' }
-
-    setVoter(created)
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(created))
+    setVoter(data.voter)
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(data.voter))
     return { error: null }
   }
 

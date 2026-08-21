@@ -26,11 +26,15 @@ export default function VotePage() {
   const fetchAll = async (voterId: string) => {
     const [candidatesRes, myVoteRes] = await Promise.all([
       supabase.from('candidates').select('*').eq('is_active', true).order('display_order'),
-      supabase.from('votes').select('candidate_id').eq('voter_id', voterId).maybeSingle(),
+      fetch('/api/voter/my-vote', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ voterId }),
+      }).then(r => r.json()).catch(() => ({ candidateId: null })),
     ])
     setCandidates(candidatesRes.data || [])
-    setMyVoteCandidateId(myVoteRes.data?.candidate_id ?? null)
-    setSelected(myVoteRes.data?.candidate_id ?? null)
+    setMyVoteCandidateId(myVoteRes.candidateId ?? null)
+    setSelected(myVoteRes.candidateId ?? null)
     setLoading(false)
   }
 
@@ -45,16 +49,22 @@ export default function VotePage() {
     if (!selected || !voter) return
     setSaving(true)
     setMessage('')
-    const { error } = await supabase
-      .from('votes')
-      .upsert(
-        { voter_id: voter.id, candidate_id: selected, updated_at: new Date().toISOString() },
-        { onConflict: 'voter_id' }
-      )
-    setSaving(false)
-    if (error) {
+    try {
+      const res = await fetch('/api/voter/submit-vote', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ voterId: voter.id, candidateId: selected }),
+      })
+      const data = await res.json()
+      if (!res.ok || data.error) {
+        setMessage('투표 처리에 실패했습니다. 다시 시도해주세요.')
+        return
+      }
+    } catch {
       setMessage('투표 처리에 실패했습니다. 다시 시도해주세요.')
       return
+    } finally {
+      setSaving(false)
     }
     setMyVoteCandidateId(selected)
     const name = candidates.find(c => c.id === selected)?.name
