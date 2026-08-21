@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { createAdminClient } from '@/lib/supabase-admin'
+import { createAdminClient, queryWithRetry } from '@/lib/supabase-admin'
 
 export async function POST(req: NextRequest) {
   const { company, department, name } = await req.json()
@@ -13,13 +13,15 @@ export async function POST(req: NextRequest) {
 
   const supabase = createAdminClient()
 
-  const { data: existing, error: selectError } = await supabase
-    .from('voters')
-    .select('*')
-    .eq('company', c)
-    .eq('department', d)
-    .eq('name', n)
-    .maybeSingle()
+  const { data: existing, error: selectError } = await queryWithRetry(() =>
+    supabase
+      .from('voters')
+      .select('*')
+      .eq('company', c)
+      .eq('department', d)
+      .eq('name', n)
+      .maybeSingle()
+  )
 
   if (selectError) {
     return NextResponse.json({ error: `조회 실패: ${selectError.message}` }, { status: 500 })
@@ -29,11 +31,9 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ voter: existing })
   }
 
-  const { data: created, error } = await supabase
-    .from('voters')
-    .insert({ company: c, department: d, name: n })
-    .select('*')
-    .single()
+  const { data: created, error } = await queryWithRetry(() =>
+    supabase.from('voters').insert({ company: c, department: d, name: n }).select('*').single()
+  )
 
   if (error || !created) {
     return NextResponse.json({ error: `등록 실패: ${error?.message || '알 수 없는 오류'}` }, { status: 500 })
