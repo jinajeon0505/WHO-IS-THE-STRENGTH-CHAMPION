@@ -13,13 +13,17 @@ export async function POST(req: NextRequest) {
 
   const supabase = createAdminClient()
 
-  const { data: existing } = await supabase
+  const { data: existing, error: selectError } = await supabase
     .from('voters')
     .select('*')
     .eq('company', c)
     .eq('department', d)
     .eq('name', n)
     .maybeSingle()
+
+  if (selectError) {
+    return NextResponse.json({ error: `조회 실패: ${selectError.message}` }, { status: 500 })
+  }
 
   if (existing) {
     return NextResponse.json({ voter: existing })
@@ -32,7 +36,7 @@ export async function POST(req: NextRequest) {
     .single()
 
   if (error || !created) {
-    return NextResponse.json({ error: '등록에 실패했습니다. 다시 시도해주세요.' }, { status: 500 })
+    return NextResponse.json({ error: `등록 실패: ${error?.message || '알 수 없는 오류'}` }, { status: 500 })
   }
 
   return NextResponse.json({ voter: created })
